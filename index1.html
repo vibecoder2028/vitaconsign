@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimpleConsign Features</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+        
+        .search-box {
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 300px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .table-container {
+            padding: 30px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: #ffffff !important;
+            padding: 20px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f1f3f4;
+            vertical-align: top;
+            color: #212529;
+            font-weight: 500;
+        }
+        
+        tr:hover {
+            background: rgba(52, 152, 219, 0.05);
+            transition: background 0.3s ease;
+        }
+        
+        .fid {
+            font-weight: bold;
+            color: #2c3e50;
+            text-align: center;
+            width: 80px;
+        }
+        
+        .feature {
+            font-weight: 600;
+            color: #2c3e50;
+            min-width: 200px;
+        }
+        
+        .description {
+            color: #495057;
+            line-height: 1.6;
+            max-width: 400px;
+            font-weight: 400;
+        }
+        
+        .priority {
+            width: 120px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .must-have { 
+            background-color: #d4edda; 
+            border-left: 4px solid #28a745;
+        }
+        .should-have { 
+            background-color: #d1ecf1; 
+            border-left: 4px solid #17a2b8;
+        }
+        .could-have { 
+            background-color: #e2e3e5; 
+            border-left: 4px solid #6c757d;
+        }
+        .wont-have { 
+            background-color: #f8d7da; 
+            border-left: 4px solid #dc3545;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f8f9fa;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SimpleConsign Features Analysis</h1>
+            <p>Comprehensive feature breakdown with MoSCoW prioritization</p>
+        </div>
+        
+        <div class="controls">
+            <div>
+                <input type="text" class="search-box" id="searchBox" placeholder="Search features...">
+            </div>
+            <div>
+                <button class="btn" onclick="exportToExcel()">📊 Export to Excel</button>
+                <button class="btn" onclick="updateStats()" style="margin-left: 10px;">📈 Update Stats</button>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table id="featuresTable">
+                <thead>
+                    <tr>
+                        <th class="fid">FID</th>
+                        <th class="feature">Feature</th>
+                        <th class="description">Description</th>
+                        <th class="priority">Required (MoSCoW)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Features will be populated here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="stats" id="statsContainer">
+            <div class="stat-item">
+                <div class="stat-number" id="totalFeatures">0</div>
+                <div class="stat-label">Total Features</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="mustHave">0</div>
+                <div class="stat-label">Must Have</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="shouldHave">0</div>
+                <div class="stat-label">Should Have</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="couldHave">0</div>
+                <div class="stat-label">Could Have</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="wontHave">0</div>
+                <div class="stat-label">Won't Have</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Feature data based on SimpleConsign website information
+        const features = [
+            {
+                fid: "POS001",
+                feature: "Point of Sale System",
+                description: "Complete POS system for processing sales transactions, handling payments, and managing customer interactions at checkout.",
+                priority: "Must Have"
+            },
+            {
+                fid: "INV001",
+                feature: "Inventory Management",
+                description: "Track, add, edit, and transfer inventory items. Manage stock levels and inventory tracking across multiple locations.",
+                priority: "Must Have"
+            },
+            {
+                fid: "CON001",
+                feature: "Consignor Management",
+                description: "Manage consignor relationships, track consignor items, and handle consignor communications and agreements.",
+                priority: "Must Have"
+            },
+            {
+                fid: "VEN001",
+                feature: "Vendor and Dealer Management",
+                description: "Support for vendor malls, dealer malls, and managing vendor relationships and booth rentals.",
+                priority: "Should Have"
+            },
+            {
+                fid: "PAY001",
+                feature: "Automated Payouts/ACH",
+                description: "Easily pay individuals or process large batch payouts. Automated commission splits and payout management.",
+                priority: "Must Have"
+            },
+            {
+                fid: "REP001",
+                feature: "Reporting and Analytics",
+                description: "Powerful reporting features with real-time reports and analytics for business insights and performance tracking.",
+                priority: "Must Have"
+            },
+            {
+                fid: "TAX001",
+                feature: "Tax and Accounting",
+                description: "Tax management features and accounting integrations to handle sales tax and financial reporting.",
+                priority: "Must Have"
+            },
+            {
+                fid: "ECO001",
+                feature: "E-commerce Integration",
+                description: "Online storefront capabilities and e-commerce platform integration for online sales channels.",
+                priority: "Should Have"
+            },
+            {
+                fid: "CLD001",
+                feature: "Cloud-Based Platform",
+                description: "Cloud-based system ensuring data security, accessibility from anywhere, and automatic updates.",
+                priority: "Must Have"
+            },
+            {
+                fid: "USR001",
+                feature: "User Management",
+                description: "Manage staff access, user permissions, and role-based access control for different system functions.",
+                priority: "Should Have"
+            },
+            {
+                fid: "CRM001",
+                feature: "Customer Relationship Management",
+                description: "CRM capabilities for managing customer relationships, tracking customer history, and customer communications.",
+                priority: "Should Have"
+            },
+            {
+                fid: "SUP001",
+                feature: "Support and Training",
+                description: "Expert staff guidance, data migration support, office and staff training, and ongoing customer support.",
+                priority: "Must Have"
+            },
+            {
+                fid: "STR001",
+                feature: "Store Management",
+                description: "Comprehensive store management tools for day-to-day operations and business workflow management.",
+                priority: "Must Have"
+            },
+            {
+                fid: "MER001",
+                feature: "Merchandising Tools",
+                description: "Tools for product merchandising, pricing strategies, and inventory display management.",
+                priority: "Could Have"
+            },
+            {
+                fid: "SEC001",
+                feature: "Infrastructure and Security",
+                description: "Secure and stable platform with robust security measures and reliable infrastructure for business operations.",
+                priority: "Must Have"
+            },
+            {
+                fid: "MLT001",
+                feature: "Multi-Location Support",
+                description: "Support for brick-and-mortar stores with multiple locations and centralized management capabilities.",
+                priority: "Should Have"
+            },
+            {
+                fid: "BLK001",
+                feature: "Bulk Inventory Tools",
+                description: "Bulk inventory management tools for efficient handling of large inventory quantities and batch operations.",
+                priority: "Could Have"
+            },
+            {
+                fid: "PHO001",
+                feature: "Photo Integration",
+                description: "Photo apps integration and image management for inventory items and product cataloging.",
+                priority: "Could Have"
+            },
+            {
+                fid: "LBL001",
+                feature: "Label Printing",
+                description: "Integrated label printing capabilities for inventory tags, price labels, and product identification.",
+                priority: "Should Have"
+            },
+            {
+                fid: "INT001",
+                feature: "Third-Party Integrations",
+                description: "Integrations with Shopify, QuickBooks, and other third-party platforms and services.",
+                priority: "Could Have"
+            },
+            {
+                fid: "MOB001",
+                feature: "Mobile Accessibility",
+                description: "Mobile-friendly interface and mobile app capabilities for on-the-go business management.",
+                priority: "Could Have"
+            },
+            {
+                fid: "AUC001",
+                feature: "Facebook Live Auctions",
+                description: "Facebook Live auction integration for engaging audiences and showcasing products through live auctions.",
+                priority: "Could Have"
+            },
+            {
+                fid: "PRT001",
+                feature: "Consignor Portal",
+                description: "Online portal where consignors can log in to view their accounts, unsold items, and pending payouts.",
+                priority: "Should Have"
+            },
+            {
+                fid: "PRC001",
+                feature: "Flexible Pricing",
+                description: "Customizable pricing structures and commission splits, with ability to scale up or down based on business needs.",
+                priority: "Should Have"
+            },
+            {
+                fid: "UPD001",
+                feature: "Regular Updates",
+                description: "Monthly platform updates with 'what's new' feature to keep users informed of changes and improvements.",
+                priority: "Should Have"
+            }
+        ];
+
+        let filteredFeatures = [...features];
+
+        function renderTable() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            
+            filteredFeatures.forEach((feature, index) => {
+                const row = document.createElement('tr');
+                const priorityClass = feature.priority.toLowerCase().replace(' ', '-');
+                row.className = priorityClass;
+                
+                row.innerHTML = `
+                    <td class="fid">${feature.fid}</td>
+                    <td class="feature">${feature.feature}</td>
+                    <td class="description">${feature.description}</td>
+                    <td class="priority">
+                        <select onchange="updatePriority(${index}, this.value)">
+                            <option value="Must Have" ${feature.priority === 'Must Have' ? 'selected' : ''}>Must Have</option>
+                            <option value="Should Have" ${feature.priority === 'Should Have' ? 'selected' : ''}>Should Have</option>
+                            <option value="Could Have" ${feature.priority === 'Could Have' ? 'selected' : ''}>Could Have</option>
+                            <option value="Won't Have" ${feature.priority === "Won't Have" ? 'selected' : ''}>Won't Have</option>
+                        </select>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            updateStats();
+        }
+
+        function updatePriority(index, newPriority) {
+            const originalIndex = features.findIndex(f => f.fid === filteredFeatures[index].fid);
+            features[originalIndex].priority = newPriority;
+            filteredFeatures[index].priority = newPriority;
+            
+            // Update row class
+            const row = document.querySelector(`#tableBody tr:nth-child(${index + 1})`);
+            row.className = newPriority.toLowerCase().replace(' ', '-');
+            
+            updateStats();
+        }
+
+        function updateStats() {
+            const stats = {
+                total: features.length,
+                mustHave: features.filter(f => f.priority === 'Must Have').length,
+                shouldHave: features.filter(f => f.priority === 'Should Have').length,
+                couldHave: features.filter(f => f.priority === 'Could Have').length,
+                wontHave: features.filter(f => f.priority === "Won't Have").length
+            };
+            
+            document.getElementById('totalFeatures').textContent = stats.total;
+            document.getElementById('mustHave').textContent = stats.mustHave;
+            document.getElementById('shouldHave').textContent = stats.shouldHave;
+            document.getElementById('couldHave').textContent = stats.couldHave;
+            document.getElementById('wontHave').textContent = stats.wontHave;
+        }
+
+        function searchFeatures() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            filteredFeatures = features.filter(feature => 
+                feature.feature.toLowerCase().includes(searchTerm) ||
+                feature.description.toLowerCase().includes(searchTerm) ||
+                feature.fid.toLowerCase().includes(searchTerm)
+            );
+            renderTable();
+        }
+
+        function exportToExcel() {
+            const wb = XLSX.utils.book_new();
+            
+            // Prepare data for Excel
+            const excelData = features.map(feature => ({
+                'FID': feature.fid,
+                'Feature': feature.feature,
+                'Description': feature.description,
+                'Required (MoSCoW)': feature.priority
+            }));
+            
+            const ws = XLSX.utils.json_to_sheet(excelData);
+            
+            // Set column widths
+            ws['!cols'] = [
+                { width: 10 },  // FID
+                { width: 30 },  // Feature
+                { width: 50 },  // Description
+                { width: 15 }   // Required
+            ];
+            
+            XLSX.utils.book_append_sheet(wb, ws, 'SimpleConsign Features');
+            
+            // Generate filename with current date
+            const date = new Date().toISOString().split('T')[0];
+            const filename = `SimpleConsign_Features_${date}.xlsx`;
+            
+            XLSX.writeFile(wb, filename);
+        }
+
+        // Event listeners
+        document.getElementById('searchBox').addEventListener('input', searchFeatures);
+
+        // Initialize the table
+        renderTable();
+    </script>
+</body>
+</html>

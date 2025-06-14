@@ -3,549 +3,1196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SimpleConsign Features</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <title>VitaTrack Pro - Distribution Management System</title>
     <style>
+        /* Reset and Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
+        /* Header */
         .header {
-            background: linear-gradient(135deg, #2c3e50, #3498db);
+            background: linear-gradient(135deg, #059669, #047857);
             color: white;
-            padding: 30px;
-            text-align: center;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 70px;
+            display: flex;
+            align-items: center;
         }
         
-        .header h1 {
-            margin: 0;
-            font-size: 2.5em;
-            font-weight: 300;
-        }
-        
-        .header p {
-            margin: 10px 0 0 0;
-            opacity: 0.9;
-            font-size: 1.1em;
-        }
-        
-        .controls {
-            padding: 20px 30px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .btn {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-        }
-        
-        .search-box {
-            padding: 10px 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 16px;
-            width: 300px;
-            transition: border-color 0.3s ease;
-        }
-        
-        .search-box:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-        
-        .table-container {
-            padding: 30px;
-            overflow-x: auto;
-        }
-        
-        table {
             width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            margin: 0 auto;
         }
         
-        th {
-            background: linear-gradient(135deg, #34495e, #2c3e50);
-            color: #ffffff !important;
-            padding: 20px 15px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 16px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        
-        td {
-            padding: 15px;
-            border-bottom: 1px solid #f1f3f4;
-            vertical-align: top;
-            color: #212529;
-            font-weight: 500;
-        }
-        
-        tr:hover {
-            background: rgba(52, 152, 219, 0.05);
-            transition: background 0.3s ease;
-        }
-        
-        .fid {
+        .logo {
+            font-size: 1.8rem;
             font-weight: bold;
-            color: #2c3e50;
-            text-align: center;
-            width: 80px;
         }
         
-        .feature {
-            font-weight: 600;
-            color: #2c3e50;
-            min-width: 200px;
-        }
-        
-        .description {
-            color: #495057;
-            line-height: 1.6;
-            max-width: 400px;
-            font-weight: 400;
-        }
-        
-        .priority {
-            width: 120px;
-        }
-        
-        select {
-            width: 100%;
-            padding: 8px 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 6px;
-            font-size: 14px;
-            background: white;
-            cursor: pointer;
-            transition: border-color 0.3s ease;
-        }
-        
-        select:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-        
-        .must-have { 
-            background-color: #d4edda; 
-            border-left: 4px solid #28a745;
-        }
-        .should-have { 
-            background-color: #d1ecf1; 
-            border-left: 4px solid #17a2b8;
-        }
-        .could-have { 
-            background-color: #e2e3e5; 
-            border-left: 4px solid #6c757d;
-        }
-        .wont-have { 
-            background-color: #f8d7da; 
-            border-left: 4px solid #dc3545;
-        }
-        
-        .stats {
+        .header-stats {
             display: flex;
-            justify-content: space-around;
-            padding: 20px;
-            background: #f8f9fa;
-            margin-top: 20px;
-            border-radius: 10px;
+            gap: 2rem;
         }
         
         .stat-item {
             text-align: center;
-            padding: 15px;
         }
         
         .stat-number {
-            font-size: 2em;
+            font-size: 1.2rem;
             font-weight: bold;
-            color: #3498db;
         }
         
         .stat-label {
-            color: #666;
-            font-size: 0.9em;
+            font-size: 0.8rem;
+            opacity: 0.9;
         }
         
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .user-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        /* Layout */
+        .app-container {
+            display: flex;
+            margin-top: 70px;
+            min-height: calc(100vh - 70px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+        }
+        
+        .nav-section {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .nav-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            margin-bottom: 0.25rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .nav-item:hover {
+            background: #334155;
+            color: #10b981;
+        }
+        
+        .nav-item.active {
+            background: #10b981;
+            color: white;
+            font-weight: 500;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            color: #64748b;
+            font-size: 1rem;
+        }
+        
+        /* Alert */
+        .alert {
+            background: #fffbeb;
+            border: 1px solid #fed7aa;
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .alert-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #d97706;
+        }
+        
+        .alert-text {
+            color: #92400e;
+            font-size: 0.9rem;
+        }
+        
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .metric-info h3 {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-info .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .metric-info .change {
+            font-size: 0.875rem;
+            color: #059669;
+        }
+        
+        .metric-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-green { background: #dcfce7; color: #16a34a; }
+        .icon-blue { background: #dbeafe; color: #2563eb; }
+        .icon-orange { background: #fed7aa; color: #ea580c; }
+        .icon-purple { background: #e9d5ff; color: #9333ea; }
+        
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .card-subtitle {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        /* Table */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            background: #f8fafc;
+            padding: 0.75rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .table td {
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.875rem;
+        }
+        
+        .table tr:hover {
+            background: #f8fafc;
+        }
+        
+        /* Status Badges */
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .badge-excellent { background: #dcfce7; color: #166534; }
+        .badge-good { background: #dbeafe; color: #1e40af; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        
+        /* Progress Bar */
+        .progress {
+            width: 100%;
+            height: 0.5rem;
+            background: #f1f5f9;
+            border-radius: 9999px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #10b981;
+            border-radius: 9999px;
+        }
+        
+        /* Action Items */
+        .action-items {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .action-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .action-critical { background: #fef2f2; border-color: #fecaca; }
+        .action-warning { background: #fffbeb; border-color: #fed7aa; }
+        .action-info { background: #eff6ff; border-color: #bfdbfe; }
+        
+        .action-content h4 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .action-content p {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        
+        /* SKU List */
+        .sku-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .sku-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .sku-item:last-child {
+            border-bottom: none;
+        }
+        
+        .sku-info h4 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .sku-info p {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        
+        .sku-revenue .amount {
+            font-weight: 600;
+            text-align: right;
+        }
+        
+        .sku-revenue .growth {
+            font-size: 0.875rem;
+            color: #059669;
+            text-align: right;
+        }
+        
+        .sku-revenue .decline {
+            font-size: 0.875rem;
+            color: #dc2626;
+            text-align: right;
+        }
+        
+        /* Forms */
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .form-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .form-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-subtitle {
+            color: #64748b;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-label.required::after {
+            content: " *";
+            color: #dc2626;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .help-text {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid #f1f5f9;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #059669;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #047857;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+        
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .back-link {
+            color: #059669;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Views */
+        .view {
+            display: none;
+        }
+        
+        .view.active {
+            display: block;
+        }
+        
+        /* Responsive */
         @media (max-width: 768px) {
-            .controls {
+            .header-stats {
+                display: none;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .app-container {
                 flex-direction: column;
-                align-items: stretch;
             }
             
-            .search-box {
-                width: 100%;
+            .main-content {
+                padding: 1rem;
             }
             
-            .header h1 {
-                font-size: 2em;
+            .content-grid {
+                grid-template-columns: 1fr;
             }
             
-            table {
-                font-size: 14px;
+            .metrics-grid {
+                grid-template-columns: 1fr;
             }
             
-            th, td {
-                padding: 10px 8px;
+            .form-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>SimpleConsign Features Analysis</h1>
-            <p>Comprehensive feature breakdown with MoSCoW prioritization</p>
-        </div>
-        
-        <div class="controls">
-            <div>
-                <input type="text" class="search-box" id="searchBox" placeholder="Search features...">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">VitaTrack Pro</div>
+            
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-number">1,687</div>
+                    <div class="stat-label">Active Stores</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">148</div>
+                    <div class="stat-label">Sales Reps</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">$245K</div>
+                    <div class="stat-label">Monthly Revenue</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">$89K</div>
+                    <div class="stat-label">Pending Settlements</div>
+                </div>
             </div>
-            <div>
-                <button class="btn" onclick="exportToExcel()">📊 Export to Excel</button>
-                <button class="btn" onclick="updateStats()" style="margin-left: 10px;">📈 Update Stats</button>
-            </div>
-        </div>
-        
-        <div class="table-container">
-            <table id="featuresTable">
-                <thead>
-                    <tr>
-                        <th class="fid">FID</th>
-                        <th class="feature">Feature</th>
-                        <th class="description">Description</th>
-                        <th class="priority">Required (MoSCoW)</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <!-- Features will be populated here -->
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="stats" id="statsContainer">
-            <div class="stat-item">
-                <div class="stat-number" id="totalFeatures">0</div>
-                <div class="stat-label">Total Features</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="mustHave">0</div>
-                <div class="stat-label">Must Have</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="shouldHave">0</div>
-                <div class="stat-label">Should Have</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="couldHave">0</div>
-                <div class="stat-label">Could Have</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="wontHave">0</div>
-                <div class="stat-label">Won't Have</div>
+            
+            <div class="user-info">
+                <div>
+                    <div style="font-weight: 600; font-size: 0.9rem;">Distribution Manager</div>
+                    <div style="font-size: 0.8rem; opacity: 0.9;">Live System Status</div>
+                </div>
+                <div class="user-avatar">DM</div>
             </div>
         </div>
+    </header>
+
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="nav-section">
+                <div class="nav-title">Overview</div>
+                <a href="#" class="nav-item active" onclick="showView('dashboard')">Dashboard</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Store Management</div>
+                <a href="#" class="nav-item" onclick="showView('stores')">All Stores (1,687)</a>
+                <a href="#" class="nav-item" onclick="showView('add-store')">+ Add New Store</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Sales & Transactions</div>
+                <a href="#" class="nav-item" onclick="showView('sales')">All Sales</a>
+                <a href="#" class="nav-item" onclick="showView('add-sale')">+ Record Sale</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Product Management</div>
+                <a href="#" class="nav-item" onclick="showView('skus')">All SKUs (50)</a>
+                <a href="#" class="nav-item" onclick="showView('add-sku')">+ Add New SKU</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Reports</div>
+                <a href="#" class="nav-item" onclick="showView('settlements')">Monthly Settlements</a>
+                <a href="#" class="nav-item" onclick="showView('analytics')">Sales Analytics</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view active">
+                <div class="page-header">
+                    <h1 class="page-title">Distribution Overview</h1>
+                    <p class="page-subtitle">Real-time view of your vitamin consignment network</p>
+                </div>
+
+                <!-- Alert -->
+                <div class="alert">
+                    <svg class="alert-icon" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div class="alert-text">
+                        <strong>Action Required:</strong> 23 stores have low stock alerts • 8 overdue settlements requiring follow-up
+                    </div>
+                </div>
+
+                <!-- Metrics -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-info">
+                                <h3>Total Inventory Value</h3>
+                                <div class="value">$1.24M</div>
+                                <div class="change">↗ +$45K this month</div>
+                            </div>
+                            <div class="metric-icon icon-green">
+                                <svg style="width: 1.5rem; height: 1.5rem;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-info">
+                                <h3>Monthly Sales</h3>
+                                <div class="value">$245K</div>
+                                <div class="change">↗ +12% vs last month</div>
+                            </div>
+                            <div class="metric-icon icon-blue">
+                                <svg style="width: 1.5rem; height: 1.5rem;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-info">
+                                <h3>Pending Settlements</h3>
+                                <div class="value">$89K</div>
+                                <div class="change">↘ 8 overdue payments</div>
+                            </div>
+                            <div class="metric-icon icon-orange">
+                                <svg style="width: 1.5rem; height: 1.5rem;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-info">
+                                <h3>Inventory Turnover</h3>
+                                <div class="value">2.3x</div>
+                                <div class="change">↗ Above industry avg</div>
+                            </div>
+                            <div class="metric-icon icon-purple">
+                                <svg style="width: 1.5rem; height: 1.5rem;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Grid -->
+                <div class="content-grid">
+                    <!-- Top Stores -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Top Performing Stores</h3>
+                            <p class="card-subtitle">Highest revenue this month</p>
+                        </div>
+                        <div class="card-content">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Store</th>
+                                        <th>Location</th>
+                                        <th>Monthly Sales</th>
+                                        <th>Performance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div style="font-weight: 600;">HealthMart Downtown</div>
+                                            <div style="color: #64748b; font-size: 0.75rem;">ID: HM-001</div>
+                                        </td>
+                                        <td>Sydney CBD</td>
+                                        <td>$8,450</td>
+                                        <td>
+                                            <span class="badge badge-excellent">Excellent</span>
+                                            <div class="progress">
+                                                <div class="progress-fill" style="width: 95%"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="font-weight: 600;">Pharmacy Plus Central</div>
+                                            <div style="color: #64748b; font-size: 0.75rem;">ID: PP-045</div>
+                                        </td>
+                                        <td>Melbourne CBD</td>
+                                        <td>$7,230</td>
+                                        <td>
+                                            <span class="badge badge-excellent">Excellent</span>
+                                            <div class="progress">
+                                                <div class="progress-fill" style="width: 87%"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="font-weight: 600;">Wellness World</div>
+                                            <div style="color: #64748b; font-size: 0.75rem;">ID: WW-123</div>
+                                        </td>
+                                        <td>Brisbane</td>
+                                        <td>$6,890</td>
+                                        <td>
+                                            <span class="badge badge-good">Good</span>
+                                            <div class="progress">
+                                                <div class="progress-fill" style="width: 82%"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Content -->
+                    <div>
+                        <!-- Action Items -->
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <div class="card-header">
+                                <h3 class="card-title">Action Required</h3>
+                                <p class="card-subtitle">Items needing attention</p>
+                            </div>
+                            <div class="card-content">
+                                <div class="action-items">
+                                    <div class="action-item action-critical">
+                                        <div class="action-content">
+                                            <h4>8 Overdue Settlements</h4>
+                                            <p>$23,450 pending payment</p>
+                                        </div>
+                                        <button class="btn btn-primary">Follow Up</button>
+                                    </div>
+                                    
+                                    <div class="action-item action-warning">
+                                        <div class="action-content">
+                                            <h4>23 Low Stock Alerts</h4>
+                                            <p>Restock needed</p>
+                                        </div>
+                                        <button class="btn btn-secondary">View All</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Top SKUs -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Top SKU Performance</h3>
+                                <p class="card-subtitle">Best sellers this month</p>
+                            </div>
+                            <div class="card-content">
+                                <div class="sku-list">
+                                    <div class="sku-item">
+                                        <div class="sku-info">
+                                            <h4>Vitamin D3 1000IU</h4>
+                                            <p>SKU: VD3-1000</p>
+                                        </div>
+                                        <div class="sku-revenue">
+                                            <div class="amount">$45,230</div>
+                                            <div class="growth">+15%</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="sku-item">
+                                        <div class="sku-info">
+                                            <h4>Multivitamin Complete</h4>
+                                            <p>SKU: MV-COMP</p>
+                                        </div>
+                                        <div class="sku-revenue">
+                                            <div class="amount">$38,950</div>
+                                            <div class="growth">+8%</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="sku-item">
+                                        <div class="sku-info">
+                                            <h4>Omega-3 Fish Oil</h4>
+                                            <p>SKU: OM3-FISH</p>
+                                        </div>
+                                        <div class="sku-revenue">
+                                            <div class="amount">$32,180</div>
+                                            <div class="growth">+22%</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="sku-item">
+                                        <div class="sku-info">
+                                            <h4>Vitamin C 1000mg</h4>
+                                            <p>SKU: VC-1000</p>
+                                        </div>
+                                        <div class="sku-revenue">
+                                            <div class="amount">$28,670</div>
+                                            <div class="decline">-3%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Store View -->
+            <div id="add-store-view" class="view">
+                <a href="#" class="back-link" onclick="showView('dashboard')">← Back to Dashboard</a>
+                
+                <div class="form-container">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h2 class="form-title">Add New Store</h2>
+                            <p class="form-subtitle">Register a new retail location for consignment</p>
+                        </div>
+                        
+                        <form>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label required">Store Name</label>
+                                    <input type="text" class="form-input" placeholder="e.g., HealthMart Downtown">
+                                    <div class="help-text">Official business name</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Store Code</label>
+                                    <input type="text" class="form-input" placeholder="e.g., HM-001">
+                                    <div class="help-text">Unique identifier</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Store Type</label>
+                                    <select class="form-select">
+                                        <option>Select store type...</option>
+                                        <option>Pharmacy</option>
+                                        <option>Health Store</option>
+                                        <option>Supermarket</option>
+                                        <option>Specialty Retail</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">State</label>
+                                    <select class="form-select">
+                                        <option>Select state...</option>
+                                        <option>NSW</option>
+                                        <option>VIC</option>
+                                        <option>QLD</option>
+                                        <option>WA</option>
+                                        <option>SA</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group full-width">
+                                    <label class="form-label required">Address</label>
+                                    <input type="text" class="form-input" placeholder="123 Main Street, Sydney CBD">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Contact Person</label>
+                                    <input type="text" class="form-input" placeholder="John Smith">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Phone</label>
+                                    <input type="tel" class="form-input" placeholder="+61 2 9XXX XXXX">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Email</label>
+                                    <input type="email" class="form-input" placeholder="manager@store.com">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Sales Rep</label>
+                                    <select class="form-select">
+                                        <option>Select sales rep...</option>
+                                        <option>Sarah Chen (Sydney Metro)</option>
+                                        <option>Jenny Wong (Melbourne CBD)</option>
+                                        <option>Lisa Park (Brisbane North)</option>
+                                        <option>Mike Johnson (Perth)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Commission Rate</label>
+                                    <select class="form-select">
+                                        <option>Select commission rate...</option>
+                                        <option>25% (Large Chain)</option>
+                                        <option>30% (Standard)</option>
+                                        <option>35% (Independent)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Monthly Target ($)</label>
+                                    <input type="number" class="form-input" placeholder="5000">
+                                    <div class="help-text">Expected monthly sales</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="showView('dashboard')">Cancel</button>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-secondary">Save Draft</button>
+                                    <button type="submit" class="btn btn-primary">Add Store</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Sale View -->
+            <div id="add-sale-view" class="view">
+                <a href="#" class="back-link" onclick="showView('dashboard')">← Back to Dashboard</a>
+                
+                <div class="form-container">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h2 class="form-title">Record New Sale</h2>
+                            <p class="form-subtitle">Log a vitamin product sale</p>
+                        </div>
+                        
+                        <form>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label required">Store</label>
+                                    <select class="form-select">
+                                        <option>Select store...</option>
+                                        <option>HealthMart Downtown (HM-001)</option>
+                                        <option>Pharmacy Plus Central (PP-045)</option>
+                                        <option>Wellness World (WW-123)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Product (SKU)</label>
+                                    <select class="form-select">
+                                        <option>Select product...</option>
+                                        <option>Vitamin D3 1000IU (VD3-1000) - $24.99</option>
+                                        <option>Multivitamin Complete (MV-COMP) - $34.99</option>
+                                        <option>Omega-3 Fish Oil (OM3-FISH) - $29.99</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Quantity</label>
+                                    <input type="number" class="form-input" placeholder="1" min="1">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Sale Date</label>
+                                    <input type="date" class="form-input">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Unit Price ($)</label>
+                                    <input type="number" class="form-input" placeholder="24.99" step="0.01">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Total Amount ($)</label>
+                                    <input type="number" class="form-input" placeholder="24.99" readonly>
+                                    <div class="help-text">Auto-calculated</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Sales Rep</label>
+                                    <select class="form-select">
+                                        <option>Select sales rep...</option>
+                                        <option>Sarah Chen</option>
+                                        <option>Jenny Wong</option>
+                                        <option>Lisa Park</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Promotion</label>
+                                    <select class="form-select">
+                                        <option>No promotion</option>
+                                        <option>Buy 2 Get 1 Free</option>
+                                        <option>10% Store Discount</option>
+                                        <option>Bulk Purchase (5+)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="showView('dashboard')">Cancel</button>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-secondary">Save Draft</button>
+                                    <button type="submit" class="btn btn-primary">Record Sale</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add SKU View -->
+            <div id="add-sku-view" class="view">
+                <a href="#" class="back-link" onclick="showView('dashboard')">← Back to Dashboard</a>
+                
+                <div class="form-container">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h2 class="form-title">Add New SKU</h2>
+                            <p class="form-subtitle">Add a new vitamin product to catalog</p>
+                        </div>
+                        
+                        <form>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label required">Product Name</label>
+                                    <input type="text" class="form-input" placeholder="e.g., Vitamin D3 1000IU">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">SKU Code</label>
+                                    <input type="text" class="form-input" placeholder="e.g., VD3-1000">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Category</label>
+                                    <select class="form-select">
+                                        <option>Select category...</option>
+                                        <option>Vitamins</option>
+                                        <option>Minerals</option>
+                                        <option>Supplements</option>
+                                        <option>Probiotics</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Pack Size</label>
+                                    <input type="number" class="form-input" placeholder="60">
+                                    <div class="help-text">Capsules/tablets per bottle</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Wholesale Cost ($)</label>
+                                    <input type="number" class="form-input" placeholder="12.50" step="0.01">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label required">Retail Price ($)</label>
+                                    <input type="number" class="form-input" placeholder="24.99" step="0.01">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Shelf Life (Months)</label>
+                                    <input type="number" class="form-input" placeholder="24">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Reorder Level</label>
+                                    <input type="number" class="form-input" placeholder="10">
+                                    <div class="help-text">Minimum stock alert</div>
+                                </div>
+                                
+                                <div class="form-group full-width">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-textarea" placeholder="Product description, benefits, dosage..."></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="showView('dashboard')">Cancel</button>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-secondary">Save Draft</button>
+                                    <button type="submit" class="btn btn-primary">Add SKU</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script>
-        // Feature data based on SimpleConsign website information
-        const features = [
-            {
-                fid: "POS001",
-                feature: "Point of Sale System",
-                description: "Complete POS system for processing sales transactions, handling payments, and managing customer interactions at checkout.",
-                priority: "Must Have"
-            },
-            {
-                fid: "INV001",
-                feature: "Inventory Management",
-                description: "Track, add, edit, and transfer inventory items. Manage stock levels and inventory tracking across multiple locations.",
-                priority: "Must Have"
-            },
-            {
-                fid: "CON001",
-                feature: "Consignor Management",
-                description: "Manage consignor relationships, track consignor items, and handle consignor communications and agreements.",
-                priority: "Must Have"
-            },
-            {
-                fid: "VEN001",
-                feature: "Vendor and Dealer Management",
-                description: "Support for vendor malls, dealer malls, and managing vendor relationships and booth rentals.",
-                priority: "Should Have"
-            },
-            {
-                fid: "PAY001",
-                feature: "Automated Payouts/ACH",
-                description: "Easily pay individuals or process large batch payouts. Automated commission splits and payout management.",
-                priority: "Must Have"
-            },
-            {
-                fid: "REP001",
-                feature: "Reporting and Analytics",
-                description: "Powerful reporting features with real-time reports and analytics for business insights and performance tracking.",
-                priority: "Must Have"
-            },
-            {
-                fid: "TAX001",
-                feature: "Tax and Accounting",
-                description: "Tax management features and accounting integrations to handle sales tax and financial reporting.",
-                priority: "Must Have"
-            },
-            {
-                fid: "ECO001",
-                feature: "E-commerce Integration",
-                description: "Online storefront capabilities and e-commerce platform integration for online sales channels.",
-                priority: "Should Have"
-            },
-            {
-                fid: "CLD001",
-                feature: "Cloud-Based Platform",
-                description: "Cloud-based system ensuring data security, accessibility from anywhere, and automatic updates.",
-                priority: "Must Have"
-            },
-            {
-                fid: "USR001",
-                feature: "User Management",
-                description: "Manage staff access, user permissions, and role-based access control for different system functions.",
-                priority: "Should Have"
-            },
-            {
-                fid: "CRM001",
-                feature: "Customer Relationship Management",
-                description: "CRM capabilities for managing customer relationships, tracking customer history, and customer communications.",
-                priority: "Should Have"
-            },
-            {
-                fid: "SUP001",
-                feature: "Support and Training",
-                description: "Expert staff guidance, data migration support, office and staff training, and ongoing customer support.",
-                priority: "Must Have"
-            },
-            {
-                fid: "STR001",
-                feature: "Store Management",
-                description: "Comprehensive store management tools for day-to-day operations and business workflow management.",
-                priority: "Must Have"
-            },
-            {
-                fid: "MER001",
-                feature: "Merchandising Tools",
-                description: "Tools for product merchandising, pricing strategies, and inventory display management.",
-                priority: "Could Have"
-            },
-            {
-                fid: "SEC001",
-                feature: "Infrastructure and Security",
-                description: "Secure and stable platform with robust security measures and reliable infrastructure for business operations.",
-                priority: "Must Have"
-            },
-            {
-                fid: "MLT001",
-                feature: "Multi-Location Support",
-                description: "Support for brick-and-mortar stores with multiple locations and centralized management capabilities.",
-                priority: "Should Have"
-            },
-            {
-                fid: "BLK001",
-                feature: "Bulk Inventory Tools",
-                description: "Bulk inventory management tools for efficient handling of large inventory quantities and batch operations.",
-                priority: "Could Have"
-            },
-            {
-                fid: "PHO001",
-                feature: "Photo Integration",
-                description: "Photo apps integration and image management for inventory items and product cataloging.",
-                priority: "Could Have"
-            },
-            {
-                fid: "LBL001",
-                feature: "Label Printing",
-                description: "Integrated label printing capabilities for inventory tags, price labels, and product identification.",
-                priority: "Should Have"
-            },
-            {
-                fid: "INT001",
-                feature: "Third-Party Integrations",
-                description: "Integrations with Shopify, QuickBooks, and other third-party platforms and services.",
-                priority: "Could Have"
-            },
-            {
-                fid: "MOB001",
-                feature: "Mobile Accessibility",
-                description: "Mobile-friendly interface and mobile app capabilities for on-the-go business management.",
-                priority: "Could Have"
-            },
-            {
-                fid: "AUC001",
-                feature: "Facebook Live Auctions",
-                description: "Facebook Live auction integration for engaging audiences and showcasing products through live auctions.",
-                priority: "Could Have"
-            },
-            {
-                fid: "PRT001",
-                feature: "Consignor Portal",
-                description: "Online portal where consignors can log in to view their accounts, unsold items, and pending payouts.",
-                priority: "Should Have"
-            },
-            {
-                fid: "PRC001",
-                feature: "Flexible Pricing",
-                description: "Customizable pricing structures and commission splits, with ability to scale up or down based on business needs.",
-                priority: "Should Have"
-            },
-            {
-                fid: "UPD001",
-                feature: "Regular Updates",
-                description: "Monthly platform updates with 'what's new' feature to keep users informed of changes and improvements.",
-                priority: "Should Have"
+        function showView(viewName) {
+            // Hide all views
+            var views = document.querySelectorAll('.view');
+            for (var i = 0; i < views.length; i++) {
+                views[i].classList.remove('active');
             }
-        ];
-
-        let filteredFeatures = [...features];
-
-        function renderTable() {
-            const tableBody = document.getElementById('tableBody');
-            tableBody.innerHTML = '';
             
-            filteredFeatures.forEach((feature, index) => {
-                const row = document.createElement('tr');
-                const priorityClass = feature.priority.toLowerCase().replace(' ', '-');
-                row.className = priorityClass;
-                
-                row.innerHTML = `
-                    <td class="fid">${feature.fid}</td>
-                    <td class="feature">${feature.feature}</td>
-                    <td class="description">${feature.description}</td>
-                    <td class="priority">
-                        <select onchange="updatePriority(${index}, this.value)">
-                            <option value="Must Have" ${feature.priority === 'Must Have' ? 'selected' : ''}>Must Have</option>
-                            <option value="Should Have" ${feature.priority === 'Should Have' ? 'selected' : ''}>Should Have</option>
-                            <option value="Could Have" ${feature.priority === 'Could Have' ? 'selected' : ''}>Could Have</option>
-                            <option value="Won't Have" ${feature.priority === "Won't Have" ? 'selected' : ''}>Won't Have</option>
-                        </select>
-                    </td>
-                `;
-                
-                tableBody.appendChild(row);
-            });
+            // Show selected view
+            var targetView = document.getElementById(viewName + '-view');
+            if (targetView) {
+                targetView.classList.add('active');
+            }
             
-            updateStats();
+            // Update navigation
+            var navItems = document.querySelectorAll('.nav-item');
+            for (var i = 0; i < navItems.length; i++) {
+                navItems[i].classList.remove('active');
+            }
+            
+            // Set active nav item
+            var clickedElement = event ? event.target : null;
+            if (clickedElement && clickedElement.classList.contains('nav-item')) {
+                clickedElement.classList.add('active');
+            }
         }
-
-        function updatePriority(index, newPriority) {
-            const originalIndex = features.findIndex(f => f.fid === filteredFeatures[index].fid);
-            features[originalIndex].priority = newPriority;
-            filteredFeatures[index].priority = newPriority;
-            
-            // Update row class
-            const row = document.querySelector(`#tableBody tr:nth-child(${index + 1})`);
-            row.className = newPriority.toLowerCase().replace(' ', '-');
-            
-            updateStats();
-        }
-
-        function updateStats() {
-            const stats = {
-                total: features.length,
-                mustHave: features.filter(f => f.priority === 'Must Have').length,
-                shouldHave: features.filter(f => f.priority === 'Should Have').length,
-                couldHave: features.filter(f => f.priority === 'Could Have').length,
-                wontHave: features.filter(f => f.priority === "Won't Have").length
-            };
-            
-            document.getElementById('totalFeatures').textContent = stats.total;
-            document.getElementById('mustHave').textContent = stats.mustHave;
-            document.getElementById('shouldHave').textContent = stats.shouldHave;
-            document.getElementById('couldHave').textContent = stats.couldHave;
-            document.getElementById('wontHave').textContent = stats.wontHave;
-        }
-
-        function searchFeatures() {
-            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
-            filteredFeatures = features.filter(feature => 
-                feature.feature.toLowerCase().includes(searchTerm) ||
-                feature.description.toLowerCase().includes(searchTerm) ||
-                feature.fid.toLowerCase().includes(searchTerm)
-            );
-            renderTable();
-        }
-
-        function exportToExcel() {
-            const wb = XLSX.utils.book_new();
-            
-            // Prepare data for Excel
-            const excelData = features.map(feature => ({
-                'FID': feature.fid,
-                'Feature': feature.feature,
-                'Description': feature.description,
-                'Required (MoSCoW)': feature.priority
-            }));
-            
-            const ws = XLSX.utils.json_to_sheet(excelData);
-            
-            // Set column widths
-            ws['!cols'] = [
-                { width: 10 },  // FID
-                { width: 30 },  // Feature
-                { width: 50 },  // Description
-                { width: 15 }   // Required
-            ];
-            
-            XLSX.utils.book_append_sheet(wb, ws, 'SimpleConsign Features');
-            
-            // Generate filename with current date
-            const date = new Date().toISOString().split('T')[0];
-            const filename = `SimpleConsign_Features_${date}.xlsx`;
-            
-            XLSX.writeFile(wb, filename);
-        }
-
-        // Event listeners
-        document.getElementById('searchBox').addEventListener('input', searchFeatures);
-
-        // Initialize the table
-        renderTable();
     </script>
 </body>
 </html>
